@@ -1,34 +1,37 @@
-import {
-  Anchor,
-  Badge,
-  Card,
-  Group,
-  Indicator,
-  Stack,
-  Text,
-} from '@mantine/core';
+import { Anchor, Badge, Card, Group, Menu, Stack, Text } from '@mantine/core';
+import { Trash } from 'tabler-icons-react';
 import { convertWeekDay, formatTime, isTimeRangeNow } from '../utils/date';
 
-export function Meeting({ meeting }) {
+export function Meeting({ meeting, onDelete }) {
   return (
     <Card>
       <Stack>
-        <Group>
-          <Anchor
-            href={meeting.link}
-            sx={{
-              fontSize: '1.25rem',
-              fontWeight: 'bold',
-              color: meeting.color,
-            }}
-            rel="noreferrer noopener"
-            target="_blank"
-          >
-            <Text>{meeting.subject}</Text>
-          </Anchor>
-          {isTimeRangeNow(meeting.timeRange) && (
-            <Badge color="green">Now</Badge>
-          )}
+        <Group position="apart" align="start" spacing="lg" noWrap>
+          <Group>
+            <Anchor
+              href={meeting.link}
+              sx={{
+                fontWeight: 'bold',
+                color: meeting.color,
+              }}
+              rel="noreferrer noopener"
+              target="_blank"
+            >
+              {meeting.subject}
+            </Anchor>
+            {isTimeRangeNow(meeting.timeRange) && (
+              <Badge color="green">Now</Badge>
+            )}
+          </Group>
+          <Menu>
+            <Menu.Item
+              color="red"
+              icon={<Trash size={16} />}
+              onClick={() => onDelete(meeting.id)}
+            >
+              Delete
+            </Menu.Item>
+          </Menu>
         </Group>
         <Text>
           {formatTime(meeting.timeRange[0])} -{' '}

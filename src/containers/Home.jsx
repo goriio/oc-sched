@@ -50,6 +50,12 @@ export function Home() {
     setNameModalOpen(false);
   };
 
+  const deleteMeeting = (id) => {
+    const newSchedule = schedule.filter((meeting) => meeting.id !== id);
+    setSchedule(newSchedule);
+    localStorage.setItem('schedule', JSON.stringify(newSchedule));
+  };
+
   return (
     <>
       <Modal
@@ -86,7 +92,11 @@ export function Home() {
             <Stack>
               {meetingsNow.length ? (
                 meetingsNow.map((meeting) => (
-                  <Meeting key={meeting.id} meeting={meeting} />
+                  <Meeting
+                    key={meeting.id}
+                    meeting={meeting}
+                    onDelete={deleteMeeting}
+                  />
                 ))
               ) : (
                 <Center>
@@ -99,7 +109,11 @@ export function Home() {
             <Stack>
               {schedule.length ? (
                 schedule.map((meeting) => (
-                  <Meeting key={meeting.id} meeting={meeting} />
+                  <Meeting
+                    key={meeting.id}
+                    meeting={meeting}
+                    onDelete={deleteMeeting}
+                  />
                 ))
               ) : (
                 <Center>
