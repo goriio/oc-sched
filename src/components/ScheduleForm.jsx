@@ -9,20 +9,36 @@ import {
 import { TimeRangeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { uniqueId } from '../utils/uniqueId';
 import { isUrl } from '../utils/validate';
 
 export function ScheduleForm() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  let initialValues = {
+    id: uniqueId(),
+    subject: '',
+    link: '',
+    days: [],
+    timeRange: [null, null],
+    color: '',
+  };
+
+  if (id) {
+    const schedule = JSON.parse(localStorage.getItem('schedule'));
+    const newSchedule = schedule.find((meeting) => meeting.id === id);
+    initialValues = {
+      ...newSchedule,
+      timeRange: [
+        new Date(newSchedule.timeRange[0]),
+        new Date(newSchedule.timeRange[1]),
+      ],
+    };
+  }
+
   const scheduleForm = useForm({
-    initialValues: {
-      subject: '',
-      link: '',
-      days: [],
-      timeRange: [null, null],
-      color: '',
-    },
+    initialValues: initialValues,
     validate: {
       subject: (value) => (value === '' ? 'Subject is required' : null),
       link: (value) =>
@@ -38,23 +54,31 @@ export function ScheduleForm() {
     },
   });
 
+  const handleSubmit = scheduleForm.onSubmit((values) => {
+    let schedule = JSON.parse(localStorage.getItem('schedule')) || [];
+
+    if (id) {
+      schedule = schedule.map((meeting) =>
+        meeting.id === id ? values : meeting
+      );
+    } else {
+      schedule = [...schedule, values];
+    }
+
+    localStorage.setItem('schedule', JSON.stringify(schedule));
+    scheduleForm.reset();
+    showNotification({
+      title: 'Successful',
+      message: `${scheduleForm.getInputProps('subject').value} is ${
+        id ? 'edited' : 'added'
+      }.`,
+    });
+    navigate('/');
+  });
+
   return (
     <Card my="md">
-      <form
-        onSubmit={scheduleForm.onSubmit((values) => {
-          const schedule = JSON.parse(localStorage.getItem('schedule')) || [];
-          console.log(schedule);
-          localStorage.setItem(
-            'schedule',
-            JSON.stringify([...schedule, { id: uniqueId(), ...values }])
-          );
-          scheduleForm.reset();
-          showNotification({
-            title: 'Successful',
-            message: `${scheduleForm.getInputProps('subject').value} is added.`,
-          });
-        })}
-      >
+      <form onSubmit={handleSubmit}>
         <Stack>
           <TextInput
             label="Subject"
@@ -96,7 +120,7 @@ export function ScheduleForm() {
             {...scheduleForm.getInputProps('color')}
           />
           <Button type="submit" onClick={() => scheduleForm.validate()} mt="md">
-            Add
+            {id ? 'Edit' : 'Add'}
           </Button>
           <Button variant="subtle" color="red" onClick={() => navigate(-1)}>
             Cancel

@@ -1,8 +1,12 @@
 import { Anchor, Badge, Card, Group, Menu, Stack, Text } from '@mantine/core';
-import { Trash } from 'tabler-icons-react';
+import dayjs from 'dayjs';
+import { useNavigate } from 'react-router-dom';
+import { Edit, Trash } from 'tabler-icons-react';
 import { convertWeekDay, formatTime, isTimeRangeNow } from '../utils/date';
 
 export function Meeting({ meeting, onDelete }) {
+  const navigate = useNavigate();
+
   return (
     <Card>
       <Stack>
@@ -19,11 +23,18 @@ export function Meeting({ meeting, onDelete }) {
             >
               {meeting.subject}
             </Anchor>
-            {isTimeRangeNow(meeting.timeRange) && (
-              <Badge color="green">Now</Badge>
-            )}
+            {isTimeRangeNow(meeting.timeRange) &&
+              meeting.days.includes(dayjs().day()) && (
+                <Badge color="green">Now</Badge>
+              )}
           </Group>
           <Menu>
+            <Menu.Item
+              icon={<Edit size={16} />}
+              onClick={() => navigate(`/edit/${meeting.id}`)}
+            >
+              Edit
+            </Menu.Item>
             <Menu.Item
               color="red"
               icon={<Trash size={16} />}

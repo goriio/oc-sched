@@ -10,6 +10,7 @@ export function AppRoutes() {
       element: <MainLayout />,
       children: [
         { path: '/add', element: <ScheduleForm /> },
+        { path: '/edit/:id', element: <ScheduleForm /> },
         { path: '/', element: <Home /> },
       ],
     },
