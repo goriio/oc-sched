@@ -10,9 +10,15 @@ export function getPartOfTheDay(hour) {
 }
 
 export function convertWeekDay(day) {
-  return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Saturday'][
-    day
-  ];
+  return [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ][day];
 }
 
 export function formatTime(time) {
