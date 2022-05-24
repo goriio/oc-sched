@@ -33,20 +33,9 @@ export function hasTimeElapsed(time) {
 }
 
 export function isTimeRangeNow(timeRange) {
-  const now = dayjs();
-  const hourNow = now.hour();
-  const minuteNow = now.minute();
+  const now = new Date().getTime();
+  const startTime = new Date(timeRange[0]).getTime();
+  const endTime = new Date(timeRange[1]).getTime();
 
-  const startHour = dayjs(timeRange[0]).hour();
-  const startMinute = dayjs(timeRange[0]).minute();
-
-  const endHour = dayjs(timeRange[1]).hour();
-  const endMinute = dayjs(timeRange[1]).minute();
-
-  return (
-    startHour >= hourNow &&
-    startMinute >= minuteNow &&
-    endHour <= hourNow &&
-    endMinute <= minuteNow
-  );
+  return startTime < now && endTime > now;
 }
