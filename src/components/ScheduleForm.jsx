@@ -10,6 +10,7 @@ import { TimeRangeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
 import { useNavigate } from 'react-router-dom';
+import { uniqueId } from '../utils/uniqueId';
 import { isUrl } from '../utils/validate';
 
 export function ScheduleForm() {
@@ -45,7 +46,7 @@ export function ScheduleForm() {
           console.log(schedule);
           localStorage.setItem(
             'schedule',
-            JSON.stringify([...schedule, values])
+            JSON.stringify([...schedule, { id: uniqueId(), ...values }])
           );
           scheduleForm.reset();
           showNotification({

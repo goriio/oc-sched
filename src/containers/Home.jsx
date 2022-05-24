@@ -86,7 +86,7 @@ export function Home() {
             <Stack>
               {meetingsNow.length ? (
                 meetingsNow.map((meeting) => (
-                  <Meeting key={meeting.subject} meeting={meeting} />
+                  <Meeting key={meeting.id} meeting={meeting} />
                 ))
               ) : (
                 <Center>
@@ -99,7 +99,7 @@ export function Home() {
             <Stack>
               {schedule.length ? (
                 schedule.map((meeting) => (
-                  <Meeting key={meeting.subject} meeting={meeting} />
+                  <Meeting key={meeting.id} meeting={meeting} />
                 ))
               ) : (
                 <Center>
