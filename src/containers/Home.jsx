@@ -9,40 +9,31 @@ import {
   TextInput,
 } from '@mantine/core';
 import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Meeting } from '../components/Meeting';
+import { ScheduleContext } from '../contexts/schedule-context';
 import { hasTimeElapsed, getPartOfTheDay } from '../utils/date';
 
 export function Home() {
   const [name, setName] = useState(localStorage.getItem('name') || '');
   const [nameModalOpen, setNameModalOpen] = useState(false);
-  const [schedule, setSchedule] = useState([]);
-  const [meetingsNow, setMeetingsNow] = useState([]);
+  const { schedule, setSchedule } = useContext(ScheduleContext);
+
+  const currentMeetings = schedule
+    .filter((meeting) => {
+      return (
+        meeting.days.includes(dayjs().day()) &&
+        !hasTimeElapsed(meeting.timeRange[1])
+      );
+    })
+    .sort((a, b) => dayjs(a.timeRange[0]).diff(dayjs(b.timeRange[0])));
 
   useEffect(() => {
     if (!name) {
       setNameModalOpen(true);
     }
   }, []);
-
-  useEffect(() => {
-    const meetings = JSON.parse(localStorage.getItem('schedule')) || [];
-    setSchedule(meetings);
-  }, []);
-
-  useEffect(() => {
-    setMeetingsNow(
-      schedule
-        .filter((meeting) => {
-          return (
-            meeting.days.includes(dayjs().day()) &&
-            !hasTimeElapsed(meeting.timeRange[1])
-          );
-        })
-        .sort((a, b) => dayjs(a.timeRange[0]).diff(dayjs(b.timeRange[0])))
-    );
-  }, [schedule]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -51,9 +42,7 @@ export function Home() {
   };
 
   const deleteMeeting = (id) => {
-    const newSchedule = schedule.filter((meeting) => meeting.id !== id);
-    setSchedule(newSchedule);
-    localStorage.setItem('schedule', JSON.stringify(newSchedule));
+    setSchedule((current) => current.filter((meeting) => meeting.id !== id));
   };
 
   return (
@@ -90,8 +79,8 @@ export function Home() {
         <Tabs grow>
           <Tabs.Tab label="Current">
             <Stack>
-              {meetingsNow.length ? (
-                meetingsNow.map((meeting) => (
+              {currentMeetings.length ? (
+                currentMeetings.map((meeting) => (
                   <Meeting
                     key={meeting.id}
                     meeting={meeting}

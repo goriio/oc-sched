@@ -9,11 +9,14 @@ import {
 import { TimeRangeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
+import { useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ScheduleContext } from '../contexts/schedule-context';
 import { uniqueId } from '../utils/uniqueId';
 import { isUrl } from '../utils/validate';
 
 export function ScheduleForm() {
+  const { schedule, setSchedule } = useContext(ScheduleContext);
   const navigate = useNavigate();
   const { id } = useParams();
   let initialValues = {
@@ -26,7 +29,6 @@ export function ScheduleForm() {
   };
 
   if (id) {
-    const schedule = JSON.parse(localStorage.getItem('schedule'));
     const newSchedule = schedule.find((meeting) => meeting.id === id);
     initialValues = {
       ...newSchedule,
@@ -55,17 +57,14 @@ export function ScheduleForm() {
   });
 
   const handleSubmit = scheduleForm.onSubmit((values) => {
-    let schedule = JSON.parse(localStorage.getItem('schedule')) || [];
-
     if (id) {
-      schedule = schedule.map((meeting) =>
-        meeting.id === id ? values : meeting
+      setSchedule((current) =>
+        current.map((meeting) => (meeting.id === id ? values : meeting))
       );
     } else {
-      schedule = [...schedule, values];
+      setSchedule((current) => [...current, values]);
     }
 
-    localStorage.setItem('schedule', JSON.stringify(schedule));
     scheduleForm.reset();
     showNotification({
       title: 'Successful',
