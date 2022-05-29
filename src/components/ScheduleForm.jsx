@@ -52,7 +52,7 @@ export function ScheduleForm() {
       days: (value) =>
         value.length === 0 ? 'Should have at least picked one' : null,
       timeRange: (value) =>
-        value.includes(null) ? 'Time range is required' : null,
+        value.includes(null) ?  'Time range is required' : value[0] > value[1] ? 'Time range should be valid' : null,
     },
   });
 
